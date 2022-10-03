@@ -45,6 +45,10 @@ namespace ClientSubnautica.MultiplayerManager
             //ApplyPatches.posLastLoop.TryRemove(int.Parse(id), out val2);
             //ApplyPatches.lastPos.TryRemove(int.Parse(id), out val3);
             ErrorMessage.AddMessage("Player " + param[0] + " disconnected.");
+            if (param[0] == MainPatcher.id)
+            {
+                MainPatcher.UpdatePresence(MainPatcher.Client, "In menu");
+            }
         }
 
         public void SpawnItem(string[] param)

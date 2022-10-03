@@ -40,6 +40,7 @@ namespace ClientSubnautica.MultiplayerManager
             client.Connect(ipDest, port);
             // Send the ID of the player to the server. [HAVE IMPERATELY TO BE THE FIRST REQUEST]
             SendMyID.start(client);
+            MainPatcher.UpdatePresence(MainPatcher.Client, "In game");
             return client;
         }
     }

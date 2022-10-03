@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Discord;
 
 namespace ClientSubnautica
 {
@@ -20,6 +21,43 @@ namespace ClientSubnautica
         public static string username;
         public static JObject configFile;
         public static Dictionary<string, string> player_list = new Dictionary<string, string>();
+
+        private static int gameTimestamp = DateTime.Now.Second - new DateTime(1970, 1, 1).Second;
+        public static Discord.Discord Client = new Discord.Discord(Int64.Parse("1026540000617189416"), (UInt64)Discord. CreateFlags.Default);
+        public static void UpdatePresence(Discord.Discord c, string state)
+        {
+            var activityManager = c.GetActivityManager();
+            var discordPresence = new Discord.Activity
+            {
+                State = state,
+                Details = "Surviving on 4546B",
+                Timestamps =
+                {
+                    Start = gameTimestamp,
+                },
+                Assets =
+                {
+                    LargeImage = "logo",
+                    LargeText = "Mod by Damien"
+                },
+                Party =
+                {
+                    Id = "Soon!",
+                    Size =
+                    {
+                        CurrentSize = player_list.Count,
+                        MaxSize = 999,
+                    },
+                },
+                Instance = true,
+                Type = ActivityType.Playing
+            };
+            activityManager.UpdateActivity(discordPresence, result =>
+            {
+                Logger.Log(Logger.Level.Debug, $"Update activity {result}");
+            });
+        }
+
 
         [QModPatch]
         public static void Patch()
@@ -35,9 +73,12 @@ namespace ClientSubnautica
             Assembly executingAssembly = Assembly.GetExecutingAssembly();
             string text = "dam_" + executingAssembly.GetName().Name;
             new Harmony(text).PatchAll(executingAssembly);
+            UpdatePresence(Client, "Into menu");
 
             Logger.Log(Logger.Level.Info, playerID + " - Username: " + username);
         }
+
+
         /// <summary>
         /// Loads a JSON file and parse it, if none is found, one is created. NOT UNIVERSAL.
         /// </summary>
