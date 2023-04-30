@@ -12,25 +12,24 @@ namespace ClientSubnautica.MultiplayerManager
     class ConnectToServer
     {
         //Connect to server
-        public static TcpClient start(string ip, string nickname = null)
+        public static TcpClient Start(string ip, string nickname = null)
         {
             string[] ipArray = ip.Split(':');
+            string playername;
+            playername = nickname;
             if(nickname == null)
+                playername = $"Player{MainPatcher.id}";
+            try
             {
-                nickname = $"Player{MainPatcher.id}";
-            } else
+                MainPatcher.configFile["nickname"] = playername;
+                var newjson = JsonConvert.SerializeObject(MainPatcher.configFile, Formatting.Indented);
+                string conffilePath = Path.Combine(MainPatcher.modFolder, "player.json");
+                File.WriteAllText(conffilePath, newjson);
+            }
+            catch (Exception e)
             {
-                try
-                {
-                    MainPatcher.configFile["nickname"] = nickname;
-                    var newjson = JsonConvert.SerializeObject(MainPatcher.configFile, Formatting.Indented);
-                    string conffilePath = Path.Combine(MainPatcher.modFolder, "player.json");
-                    File.WriteAllText(Path.Combine(MainPatcher.modFolder, "player.json"), newjson);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception(e.Message, e);
-                }
+                ErrorMessage.AddError(e.Message);
+                throw new Exception(e.Message, e);
             }
 
             IPAddress ipDest = IPAddress.Parse(ipArray[0]);

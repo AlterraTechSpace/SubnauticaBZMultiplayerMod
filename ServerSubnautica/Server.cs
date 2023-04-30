@@ -76,10 +76,13 @@ class Server
             string username = "";
             byte[] buffer = new byte[1024];
             int byte_count;
+
             byte_count = client.GetStream().Read(buffer, 0, buffer.Length);
             string data = Encoding.ASCII.GetString(buffer, 0, byte_count);
+
             if (!data.Contains("/END/"))
                 continue;
+
             // Split the greaaaat stream into commands
             string[] commands = data.Split(new string[] { "/END/" }, StringSplitOptions.None);
             foreach(string command in commands)
@@ -127,9 +130,9 @@ class Server
             File.WriteAllTextAsync(path,
 @"{
     ""MapFolderName"": ""slot0000"",
-    ""ipAddress"": """ + GetLocalIPv4() + @""",
+    ""ipAddress"": ""0.0.0.0"",
     ""port"": 5000
-}");
+}");        // 0.0.0.0 will open on every IPs available.
             return JObject.Parse(File.ReadAllText(path));
         } // If it is not the config.json file, it throws a new exception.
         else throw new Exception($"The file you're trying to access ({Path.GetFileName(path)}) does not exist or is inaccessible and has no default value.");
@@ -149,9 +152,7 @@ class Server
             string zipPath = outFullPath;
 
             if (File.Exists(zipPath))
-            {
                 File.Delete(zipPath);
-            }
 
             ZipFile.CreateFromDirectory(startPath, zipPath);
             return true;
@@ -172,6 +173,7 @@ class Server
     /// Gets the IPv4 of this computer. It will be a 25... if using Hamachi, for example.
     /// </summary>
     /// <returns>A string of IP Address (type IPv4)</returns>
+    /*
     public static string GetLocalIPv4()
     {
         if (!NetworkInterface.GetIsNetworkAvailable()) 
@@ -181,4 +183,5 @@ class Server
 
         return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToString();
     }
+    */
 }

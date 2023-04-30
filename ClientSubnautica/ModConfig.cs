@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClientSubnautica
 {
-    [Menu("Multiplayer Mode")]
+    [Menu("Multiplayer Mod")]
     public class ModConfig
     {
     }

@@ -24,7 +24,7 @@ namespace ClientSubnautica
 			LargeWorldEntity.Register(gameObject);
             CrafterLogic.NotifyCraftEnd(gameObject, objectTechType);
             gameObject.SendMessage("StartConstruction", 1);
-            if (callback != null) { callback.Invoke(gameObjectPrefab); }
+            callback?.Invoke(gameObjectPrefab);
         }
     }
 }

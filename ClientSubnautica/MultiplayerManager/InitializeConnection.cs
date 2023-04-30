@@ -23,7 +23,7 @@ namespace ClientSubnautica.MultiplayerManager
         {
             //Thread sender
 
-            client = ConnectToServer.start(ip, nickname);
+            client = ConnectToServer.Start(ip, nickname);
 
             bool isconnected = client.Connected;
             NetworkStream ns = client.GetStream();
@@ -33,7 +33,7 @@ namespace ClientSubnautica.MultiplayerManager
             byte[] data = downloadMap(ns);
             ErrorMessage.AddMessage("Downloading map... 100%");
 
-            string outDirectoryPath = importMap(data);
+            string outDirectoryPath = importMap (data);
 
             ErrorMessage.AddMessage("Map downloaded !");
 
@@ -45,43 +45,44 @@ namespace ClientSubnautica.MultiplayerManager
 
             string message2 = Encoding.ASCII.GetString(receivedBytes2, 0, byte_count);
             string[] arr = message2.Split('$');
+            ErrorMessage.AddError(message2.ToString());
 
-            if (arr != null)
+            if (arr == null)
+                return;
+
+            GameModePresetId gameMode = GameModePresetId.Survival;
+            switch (arr[2])
             {
-
-                GameModePresetId gameMode = GameModePresetId.Survival;
-                switch (arr[2])
-                {
-                    /* 
-                    case "1":
-                        gameMode = GameModePresetId.Freedom;
-                        break;
+                /* 
+                case "1":
+                    gameMode = GameModePresetId.Freedom;
+                    break;
                      
-                    case "2":
-                        gameMode = GameModePresetId.Hardcore;
-                        break;
-                    */
-                    case "4":
-                        gameMode = GameModePresetId.Creative;
-                        break;
-                }
-
-                ErrorMessage.AddMessage("Loading map ...");
-                CoroutineHost.StartCoroutine(LoadMap.loadMap(uGUI_MainMenu.main, outDirectoryPath, arr[0], arr[1], gameMode, new GameOptions(),arr[3], returnValue =>
-                    {
-
-
-                        byte[] test = Encoding.ASCII.GetBytes("ok");
-
-                        ns.Write(test, 0, test.Length);
-
-                        //Thread receiver
-                        Thread threadReceiver = new Thread(o => ReceiveDataFromServer.start((TcpClient)o));
-                        threadReceiver.Start(client);
-
-                        threadStarted = true;
-                    }));
+                case "2":
+                    gameMode = GameModePresetId.Hardcore;
+                    break;
+                */
+                case "4":
+                    gameMode = GameModePresetId.Creative;
+                    break;
             }
+
+            ErrorMessage.AddMessage("Loading map ...");
+            CoroutineHost.StartCoroutine(LoadMap.loadMap(uGUI_MainMenu.main, outDirectoryPath, arr[0], arr[1], gameMode, new GameOptions(),arr[3], returnValue =>
+                {
+
+
+                    byte[] test = Encoding.ASCII.GetBytes("ok");
+
+                    ns.Write(test, 0, test.Length);
+
+                    //Thread receiver
+                    Thread threadReceiver = new Thread(o => ReceiveDataFromServer.start((TcpClient)o));
+                    threadReceiver.Start(client);
+
+                    threadStarted = true;
+                }
+            ));
             
         }
 

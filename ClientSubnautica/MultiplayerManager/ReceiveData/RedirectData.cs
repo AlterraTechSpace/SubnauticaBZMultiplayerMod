@@ -20,38 +20,35 @@ namespace ClientSubnautica.MultiplayerManager
         [HarmonyPostfix]
         public static void redirectOnFunctionManager()
         {
-            if (InitializeConnection.threadStarted)
+            if (!InitializeConnection.threadStarted)
+                return;
+            lock (m_lockRequests)
             {
-                lock (m_lockRequests)
+                foreach (var item in receivedRequestsQueue)
                 {
-                    foreach (var item in receivedRequestsQueue)
+                    if (!item.Contains("/END/"))
+                        continue;
+                    string[] commands= item.Split(new string[] { "/END/" }, StringSplitOptions.None);
+                    foreach (var command in commands)
                     {
-                        if (item.Contains("/END/"))
+                        try
                         {
-                            string[] commands= item.Split(new string[] { "/END/" }, StringSplitOptions.None);
-                            foreach (var command in commands)
-                            {
-                                try
-                                {
-                                    if (command.Length > 1)
-                                    {
-                                        string idCMD = command.Split(':')[0];
-                                        string[] param;
-                                        param = command.Substring(command.IndexOf(":") + 1).Split(';');
-                                        Type type = typeof(FunctionManager);
-                                        MethodInfo method = type.GetMethod(NetworkCMD.Translate(idCMD));
-                                        FunctionManager c = new FunctionManager();
-                                        method.Invoke(c, new System.Object[] { param });
-                                    }
-                                }
-                                catch (Exception e) {
-                                    Console.WriteLine(e.Message);
-                                }
-                            }
+                            if (command.Length < 1)
+                                continue;
+                            string idCMD = command.Split(':')[0];
+                            string[] param;
+                            param = command.Substring(command.IndexOf(":") + 1).Split(';');
+                            Type type = typeof(FunctionManager);
+                            MethodInfo method = type.GetMethod(NetworkCMD.Translate(idCMD));
+                            FunctionManager c = new FunctionManager();
+                            method.Invoke(c, new System.Object[] { param });
+                        }
+                        catch (Exception e) {
+                            Console.WriteLine(e.Message);
                         }
                     }
-                    receivedRequestsQueue.Clear();
                 }
+                receivedRequestsQueue.Clear();
             }
         }
     }

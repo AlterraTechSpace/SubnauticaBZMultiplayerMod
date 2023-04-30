@@ -39,24 +39,23 @@ namespace ClientSubnautica.MultiplayerManager.SendData
                     catch
                     { }
 
-                    if (Player.main.transform.position.x.ToString() != x | Player.main.transform.position.y.ToString() != y | Player.main.transform.position.z.ToString() != z | rotxTemp != rotx | rotyTemp != roty | rotzTemp != rotz | rotwTemp != rotw)
-                    {
-                        byte[] msgresponse = Encoding.ASCII.GetBytes("");
-                        Array.Clear(msgresponse, 0, msgresponse.Length);
+                    if (Player.main.transform.position.x.ToString() == x | Player.main.transform.position.y.ToString() == y | Player.main.transform.position.z.ToString() == z | rotxTemp == rotx | rotyTemp == roty | rotzTemp == rotz | rotwTemp == rotw)
+                        continue;
+                    byte[] msgresponse = Encoding.ASCII.GetBytes("");
+                    Array.Clear(msgresponse, 0, msgresponse.Length);
 
-                        msgresponse = Encoding.ASCII.GetBytes(NetworkCMD.getIdCMD("WorldPosition") +":" + MainPatcher.id + ";"+ Player.main.transform.position.x + ";" + Player.main.transform.position.y + ";" + Player.main.transform.position.z +";"+rotx+";"+roty+";"+rotz+";"+rotw+ "/END/");
+                    msgresponse = Encoding.ASCII.GetBytes(NetworkCMD.getIdCMD("WorldPosition") +":" + MainPatcher.id + ";"+ Player.main.transform.position.x + ";" + Player.main.transform.position.y + ";" + Player.main.transform.position.z +";"+rotx+";"+roty+";"+rotz+";"+rotw+ "/END/");
 
-                        // Position envoyé !
-                        ns2.Write(msgresponse, 0, msgresponse.Length);
-                        x = Player.main.transform.position.x.ToString();
-                        y = Player.main.transform.position.y.ToString();
-                        z = Player.main.transform.position.z.ToString();
+                    // Position envoyé !
+                    ns2.Write(msgresponse, 0, msgresponse.Length);
+                    x = Player.main.transform.position.x.ToString();
+                    y = Player.main.transform.position.y.ToString();
+                    z = Player.main.transform.position.z.ToString();
 
-                        rotx = rotxTemp;
-                        roty = rotyTemp;
-                        rotz = rotzTemp;
-                        rotw = rotwTemp;
-                    }
+                    rotx = rotxTemp;
+                    roty = rotyTemp;
+                    rotz = rotzTemp;
+                    rotw = rotwTemp;
                     Thread.Sleep(10);
                 }
             }

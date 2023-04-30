@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using UnityEngine;
 using UWE;
+using Logger = QModManager.Utility.Logger;
 
 namespace ClientSubnautica.MultiplayerManager
 {
@@ -12,25 +13,25 @@ namespace ClientSubnautica.MultiplayerManager
         public void WorldPosition(string[] param)
         {
             FunctionToClient.setPosPlayer(param);
-            ErrorMessage.AddMessage("Player " + param[0] + " position updated");
+            Logger.Log(Logger.Level.Debug, $"Player {param[0]} position updated");
         }
 
         public void NewId(string[] param)
         {
             MainPatcher.player_list.Add(param[0], param[1]);
             FunctionToClient.addPlayer(param[0], param[1]);
-            ErrorMessage.AddMessage("Player " + param[0] + " joined !");
+            Logger.Log(Logger.Level.Debug, $"Player {param[0]} joined !");
         }
         public void AllId(string[] param)
         {
             foreach (string playerData in param)
             {
-                if (playerData.Length > 0)
-                {
-                    var entries = playerData.Split('&');
-                    FunctionToClient.addPlayer(entries[0], entries[1]);
-                    ErrorMessage.AddMessage("Players " + entries[0] + " (" + entries[1] + ") added.");
-                }
+                if (playerData.Length < 0)
+                    continue;
+
+                var entries = playerData.Split('&');
+                FunctionToClient.addPlayer(entries[0], entries[1]);
+                Logger.Log(Logger.Level.Debug, $"Player {entries[0]} ({entries[1]}) added.");
             } 
         }
         public void Disconnected(string[] param)
@@ -47,7 +48,7 @@ namespace ClientSubnautica.MultiplayerManager
             }
             //ApplyPatches.posLastLoop.TryRemove(int.Parse(id), out val2);
             //ApplyPatches.lastPos.TryRemove(int.Parse(id), out val3);
-            ErrorMessage.AddMessage("Player " + param[0] + " disconnected.");
+            Logger.Log(Logger.Level.Debug, $"Player {param[0]} disconnected.");
         }
 
         public void SpawnItem(string[] param)
@@ -63,14 +64,13 @@ namespace ClientSubnautica.MultiplayerManager
             GameObject[] firstList = GameObject.FindObjectsOfType<GameObject>();
             foreach (var item in firstList)
             {
-                if(item.GetComponent<UniqueGuid>() != null)
-                {
-                    if (item.GetComponent<UniqueGuid>().guid == param[1])
-                    {
-                        UnityEngine.Object.Destroy(item);
-                        break;
-                    }
-                }
+                if (item.GetComponent<UniqueGuid>() == null)
+                    continue;
+                if (item.GetComponent<UniqueGuid>().guid != param[1])
+                    continue;
+
+                UnityEngine.Object.Destroy(item);
+                break;
             }
 
         }
@@ -106,10 +106,10 @@ namespace ClientSubnautica.MultiplayerManager
 
             AccessTools.Method(typeof(DayNightCycle), "UpdateAtmosphere").Invoke(DayNightCycle.main, new object[] { });
 
-            if (!flag)
-            {
-                DayNightCycle.main.dayNightCycleChangedEvent.Trigger(true);
-            }
+            if (flag)
+                return;
+
+            DayNightCycle.main.dayNightCycleChangedEvent.Trigger(true);
         }
 
         public void weather(string[] param)

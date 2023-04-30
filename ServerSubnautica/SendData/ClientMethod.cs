@@ -21,12 +21,11 @@ namespace ServerSubnautica
             {
                 foreach (var c in Server.list_clients)
                 {
-                    if (c.Key != id)
-                    {
-                        //Console.WriteLine("Sending position to id "+id);
-                        NetworkStream stream = c.Value.GetStream();
-                        stream.Write(buffer, 0, buffer.Length);
-                    }
+                    if (c.Key == id)
+                        continue;
+                    //Console.WriteLine("Sending position to id "+id);
+                    NetworkStream stream = c.Value.GetStream();
+                    stream.Write(buffer, 0, buffer.Length);
                 }
             }
         }
@@ -37,12 +36,11 @@ namespace ServerSubnautica
             {
                 foreach (var c in Server.list_clients)
                 {
-                    if (c.Key == id)
-                    {
-                        //Console.WriteLine("Sending position to id "+id);
-                        NetworkStream stream = c.Value.GetStream();
-                        stream.Write(buffer, 0, buffer.Length);
-                    }
+                    if (c.Key != id)
+                        continue;
+                    //Console.WriteLine("Sending position to id "+id);
+                    NetworkStream stream = c.Value.GetStream();
+                    stream.Write(buffer, 0, buffer.Length);
                 }
             }
         }

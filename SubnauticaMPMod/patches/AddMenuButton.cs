@@ -1,11 +1,7 @@
-﻿using ClientSubnautica.MultiplayerManager;
-using HarmonyLib;
-using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace ClientSubnautica
 {
@@ -51,11 +47,14 @@ namespace ClientSubnautica
 
                         gameObject.FindChild("Subscribe").GetComponent<Button>().onClick.AddListener(() =>
                         {
-                                //GameObject.Find("Menu canvas/Panel/MainMenu/RightSide/MultiplayerMenu/SubscriptionInProgress").SetActive(true);
-                                InitializeConnection test = new InitializeConnection();
+                            //GameObject.Find("Menu canvas/Panel/MainMenu/RightSide/MultiplayerMenu/SubscriptionInProgress").SetActive(true);
+
+                            // DEPRECATED
+                            //InitializeConnection test = new InitializeConnection();
                             try
                             {
-                                test.start(gameObject.FindChild("InputField").GetComponent<TMP_InputField>().text, MainPatcher.username);
+                                // DEPRECATED
+                                //test.start(gameObject.FindChild("InputField").GetComponent<TMP_InputField>().text, MainPatcher.username);
                                 GameObject.Find("Menu canvas/Panel/MainMenu/RightSide/MultiplayerMenu/SubscriptionInProgress").SetActive(false);
 
                                 GameObject.Find("Menu canvas/Panel/MainMenu/RightSide/MultiplayerMenu/SubscriptionSuccess").SetActive(true);

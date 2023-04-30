@@ -46,10 +46,8 @@ namespace ClientSubnautica
         public static JObject LoadParam(string path)
         {
             if (File.Exists(path))
-            {
                 return JObject.Parse(File.ReadAllText(path));
-            }
-            else if (path.EndsWith("player.json"))
+            if (path.EndsWith("player.json"))
             {
                 var id = GenerateID();
                 File.WriteAllText(path,
@@ -60,7 +58,11 @@ namespace ClientSubnautica
 }");
                 return JObject.Parse(File.ReadAllText(path));
             }
-            else throw new Exception("The file you're trying to access does not exist, and has no default value.");
+            else
+            {
+                ErrorMessage.AddError("The file you're trying to access does not exist, and has no default value.");
+                throw new Exception("The file you're trying to access does not exist, and has no default value.");
+            }
         }
         public static string GenerateID()
         {
